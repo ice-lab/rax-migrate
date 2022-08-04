@@ -11,5 +11,5 @@ $ npm i rax-migrate --save
 ## Usage
 
 ```jsx
-rax-migrate tranform ./rax-project 
+rax-migrate transform ./rax-project 
 ```

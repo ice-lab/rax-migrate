@@ -3,6 +3,7 @@ import spawn from 'cross-spawn';
 interface TransfromOptions {
   rootDir: string;
   projcetName: string;
+  raxProjectName: string;
 }
 
 export function transform(options: TransfromOptions) {
@@ -11,8 +12,14 @@ export function transform(options: TransfromOptions) {
     stdio: 'inherit',
   });
 
+  // Remove default src.
   spawn.sync('rm', ['-rf', 'src'], {
     cwd: `./${options.projcetName}`,
+    stdio: 'inherit',
+  });
+
+  // Copy src of rax project to ice project.
+  spawn.sync('cp', ['-r', `./${options.raxProjectName}/src`, `./${options.projcetName}/src`], {
     stdio: 'inherit',
   });
 };

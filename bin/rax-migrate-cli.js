@@ -4,7 +4,6 @@ import { program } from 'commander';
 import { transform } from '../esm/index.js'
 import process from 'process';
 import { fileURLToPath } from 'url';
-import pkg from '../package.json';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -30,7 +29,7 @@ Commands:
   .action(async ({ rootDir, ...commandArgs }) => {
 
     // Print help.
-    if (argv._.length === 0 && (argv.h || argv.help)) {
+    if (argv.length === 0 && (argv.h || argv.help)) {
       printHelp();
       process.exit(1);
     }
@@ -39,11 +38,11 @@ Commands:
       console.error('You need to provide the file name of rax project.');
       process.exit(1);
     }
-
+    
     transform({
       rootDir,
       projcetName: commandArgs.name,
-      raxPath: path.resolve(__dirname, argv[0])
+      raxProjectName: argv[1],
     });
   });
 
