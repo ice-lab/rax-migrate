@@ -22,4 +22,6 @@ export function transform(options: TransfromOptions) {
   spawn.sync('cp', ['-r', `./${options.raxProjectName}/src`, `./${options.projcetName}/src`], {
     stdio: 'inherit',
   });
+
+
 };
