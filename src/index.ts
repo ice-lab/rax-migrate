@@ -3,6 +3,7 @@ import fs from 'fs';
 import spawn from 'cross-spawn';
 import path from 'path';
 import transformBuild from './transformBuild.js';
+import mergePackage from './mergePackage.js';
 
 interface TransfromOptions {
   rootDir: string;
@@ -38,6 +39,11 @@ export async function transform(options: TransfromOptions) {
   // Transfrom build.json to ice.config.mts.
   const buildJson = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const iceConfig = await transformBuild(buildJson);
-  let file = path.join(iceProjectDir, './ice.config.mts');
-  await fs.promises.writeFile(file, JSON.stringify(iceConfig), 'utf8');
+  fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), iceConfig);
+
+  // Merge package.json.
+  const raxPkg = await fse.readJSON(path.join(raxProjectDir, './package.json'));
+  const icePkg = await fse.readJSON(path.join(iceProjectDir, './package.json'));
+  const mergePkg = await mergePackage(raxPkg, icePkg);
+  fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg);
 };
