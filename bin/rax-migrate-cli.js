@@ -3,9 +3,6 @@ import path from 'path';
 import { program } from 'commander';
 import { transform } from '../esm/index.js'
 import process from 'process';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const argv = process.argv.slice(2);
 
