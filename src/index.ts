@@ -4,6 +4,7 @@ import spawn from 'cross-spawn';
 import path from 'path';
 import transformBuild from './transformBuild.js';
 import mergePackage from './mergePackage.js';
+import moveFiles from './moveFiles.js';
 
 interface TransfromOptions {
   rootDir: string;
@@ -46,4 +47,7 @@ export async function transform(options: TransfromOptions) {
   const icePkg = await fse.readJSON(path.join(iceProjectDir, './package.json'));
   const mergePkg = await mergePackage(raxPkg, icePkg);
   fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg);
+
+  // Move other files such as tsconfig and etc...
+  await moveFiles();
 };
