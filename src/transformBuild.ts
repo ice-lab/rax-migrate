@@ -10,6 +10,8 @@ interface ICEConfig {
   proxy?: object,
   define?: object,
   compileDependencies?: Array<string> | boolean,
+  eslint?: boolean | object,
+  tsChecker?: boolean,
 }
 
 interface RAXConfig {
@@ -28,6 +30,8 @@ interface RAXConfig {
   browserslist?: string | object,
   compileDependencies?: Array<string>,
   terserOptions: object,
+  eslint?: boolean | object,
+  tsChecker?: boolean,
 }
 
 interface Config {
@@ -77,8 +81,12 @@ async function transformBuild(buildJson: RAXConfig): Promise<Config> {
     'proxy',
     'define',
     'compileDependencies',
+    'eslint',
+    'tsChecker'
   ].forEach(key => {
-    config.iceConfig[key] = buildJson[key];
+    if (buildJson[key] !== undefined) {
+      config.iceConfig[key] = buildJson[key];
+    }
   })
 
   return config;

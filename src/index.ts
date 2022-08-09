@@ -39,8 +39,13 @@ export async function transform(options: TransfromOptions) {
 
   // Transfrom build.json to ice.config.mts.
   const buildJson = await fse.readJSON(path.join(raxProjectDir, './build.json'));
-  const iceConfig = await transformBuild(buildJson);
-  fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), iceConfig);
+  const config = await transformBuild(buildJson);
+  if (config.iceConfig) {
+    fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), config.iceConfig);
+  }
+  if (config.browsersListRc) {
+    await fs.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
+  }
 
   // Merge package.json.
   const raxPkg = await fse.readJSON(path.join(raxProjectDir, './package.json'));
