@@ -5,7 +5,7 @@ A tool to support Rax project migration to ICE 3 project.
 ## Install
 
 ```bash
-$ npm i rax-migrate --save
+$ npm i rax-migrate -g
 ```
 
 ## Usage
