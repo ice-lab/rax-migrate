@@ -44,6 +44,8 @@ async function transformBuild(buildJson: RAXConfig): Promise<Config> {
     iceConfig: {},
   };
 
+  // TODO: support other options of build.json.
+
   if (!buildJson.webpack5) {
     console.warn('ICE3 use webpack5...');
   }
