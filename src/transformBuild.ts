@@ -47,7 +47,7 @@ async function transformBuild(buildJson: RAXConfig): Promise<Config> {
   // TODO: support other options of build.json.
 
   if (!buildJson.webpack5) {
-    console.warn('ICE3 use webpack5...');
+    console.warn('The Rax project currently uses Webpack4, but ICE3 uses Webpack5. Please be aware of the differences.');
   }
 
   if (buildJson.inlineStyle) {
