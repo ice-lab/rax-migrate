@@ -1,4 +1,4 @@
-interface ICEConfig {
+export interface ICEConfig {
   alias?: Object,
   publicPath?: string,
   devPublicPath?: string,
@@ -14,7 +14,7 @@ interface ICEConfig {
   tsChecker?: boolean,
 }
 
-interface RAXConfig {
+export interface RaxAppConfig {
   webpack5?: boolean,
   inlineStyle?: boolean | { forceEnableCSS: boolean },
   alias?: Object,
@@ -34,12 +34,12 @@ interface RAXConfig {
   tsChecker?: boolean,
 }
 
-interface Config {
+export interface Config {
   iceConfig: ICEConfig,
   browsersListRc?: string,
 }
 
-async function transformBuild(buildJson: RAXConfig): Promise<Config> {
+async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
   const config: Config = {
     iceConfig: {},
   };

@@ -5,6 +5,7 @@ import path from 'path';
 import transformBuild from './transformBuild.js';
 import mergePackage from './mergePackage.js';
 import moveFiles from './moveFiles.js';
+import type { RaxAppConfig, Config } from './transformBuild';
 
 interface TransfromOptions {
   rootDir: string;
@@ -38,8 +39,8 @@ export async function transform(options: TransfromOptions) {
   });
 
   // Transfrom build.json to ice.config.mts.
-  const buildJson = await fse.readJSON(path.join(raxProjectDir, './build.json'));
-  const config = await transformBuild(buildJson);
+  const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
+  const config: Config = await transformBuild(buildJson);
   if (config.iceConfig) {
     fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), config.iceConfig);
   }
