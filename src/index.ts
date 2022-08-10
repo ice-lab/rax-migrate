@@ -54,5 +54,5 @@ export async function transform(options: TransfromOptions) {
   fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg);
 
   // Move other files such as tsconfig and etc...
-  await moveFiles();
+  await moveFiles(raxProjectDir, iceProjectDir);
 };
