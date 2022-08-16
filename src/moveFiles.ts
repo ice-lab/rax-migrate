@@ -1,5 +1,5 @@
 import fs from 'fs';
-import shell from 'shelljs';
+import spawn from 'cross-spawn';
 import path from 'path';
 
 const NotCopyList = {
@@ -12,10 +12,11 @@ async function moveFiles(raxProjectDir: string, iceProjectDir: string): Promise<
   for (let fileName of fs.readdirSync(raxProjectDir)) {
     let stat = fs.lstatSync(path.resolve(raxProjectDir, fileName));
     if (!NotCopyList[fileName]) {
-      console.log(`Copy ${fileName} to ice project...`);
       const from = path.resolve(raxProjectDir, fileName);
       const to = path.resolve(iceProjectDir);
-      shell.exec(`cp ${stat.isDirectory() ? '-r ' : ''}${from} ${to}`);
+      spawn.sync('cp', ['-r', from, to], {
+        stdio: 'inherit',
+      });
     }
   }
 }

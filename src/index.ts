@@ -1,17 +1,20 @@
 import fse from 'fs-extra';
-import fs from 'fs';
 import spawn from 'cross-spawn';
 import path from 'path';
+import ejs from 'ejs';
 import transformBuild from './transformBuild.js';
 import mergePackage from './mergePackage.js';
 import moveFiles from './moveFiles.js';
 import type { RaxAppConfig, Config } from './transformBuild';
+import { fileURLToPath } from 'url';
 
 interface TransfromOptions {
   rootDir: string;
   projcetName: string;
   raxProjectName: string;
 }
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function transform(options: TransfromOptions) {
   const iceProjectDir = path.resolve(process.cwd(), options.projcetName);
@@ -45,7 +48,7 @@ export async function transform(options: TransfromOptions) {
     fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), config.iceConfig);
   }
   if (config.browsersListRc) {
-    await fs.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
+    fse.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
   }
 
   // Merge package.json.
@@ -56,4 +59,10 @@ export async function transform(options: TransfromOptions) {
 
   // Move other files such as tsconfig and etc...
   await moveFiles(raxProjectDir, iceProjectDir);
+
+  const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
+  const iceConfigStr = await ejs.render(template, {
+    config: {}
+  });
+  fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
 };

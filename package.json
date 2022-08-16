@@ -11,7 +11,8 @@
     "cjs",
     "es2017",
     "dist",
-    "build"
+    "build",
+    "templates"
   ],
   "module": "esm/index.js",
   "exports": {
@@ -41,6 +42,7 @@
     "@swc/helpers": "^0.3.8",
     "commander": "^9.4.0",
     "cross-spawn": "^7.0.3",
+    "ejs": "^3.1.8",
     "fs-extra": "^10.1.0",
     "url": "^0.11.0"
   },
