@@ -45,7 +45,7 @@ export async function transform(options: TransfromOptions) {
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const config: Config = await transformBuild(buildJson);
   if (config.iceConfig) {
-    fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), config.iceConfig);
+    fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), config.iceConfig, { spaces: '\t' });
   }
   if (config.browsersListRc) {
     fse.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
@@ -55,7 +55,7 @@ export async function transform(options: TransfromOptions) {
   const raxPkg = await fse.readJSON(path.join(raxProjectDir, './package.json'));
   const icePkg = await fse.readJSON(path.join(iceProjectDir, './package.json'));
   const mergePkg = await mergePackage(raxPkg, icePkg);
-  fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg);
+  fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg, { spaces: '\t' });
 
   // Move other files such as tsconfig and etc...
   await moveFiles(raxProjectDir, iceProjectDir);

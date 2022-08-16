@@ -12,7 +12,7 @@ function mergePackage(raxPkg: object, icePkg: object): object {
       pkg[key] = Object.assign(raxValue, iceValue);
     } else {
       // Merge rax pkg config and ice pkg config.
-      if (Object.prototype.toString.call(raxValue) === '[Object Object]') {
+      if (typeof raxValue === 'object') {
         pkg[key] = Object.assign(iceValue, raxValue);
       } else {
         pkg[key] = raxValue;
