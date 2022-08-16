@@ -1,3 +1,7 @@
+const extraDependencies = {
+  '@ice/plugin-rax-compat': 'beta',
+};
+
 function mergePackage(raxPkg: object, icePkg: object): object {
   let pkg = Object.assign({}, icePkg);
   for (let key in raxPkg) {
@@ -15,6 +19,12 @@ function mergePackage(raxPkg: object, icePkg: object): object {
       }
     }
   }
+
+  // Add extra dependencies to dependencies.
+  for (let [dep, version] of Object.entries(extraDependencies)) {
+    pkg['dependencies'][dep] = version;
+  }
+
   return pkg;
 }
 

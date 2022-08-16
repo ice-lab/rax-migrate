@@ -36,7 +36,6 @@
     "rax"
   ],
   "dependencies": {
-    "@swc/helpers": "^0.3.8",
     "commander": "^9.4.0",
     "cross-spawn": "^7.0.3",
     "ejs": "^3.1.8",

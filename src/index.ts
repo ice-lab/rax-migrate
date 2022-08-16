@@ -62,7 +62,9 @@ export async function transform(options: TransfromOptions) {
 
   const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
   const iceConfigStr = await ejs.render(template, {
-    config: {}
+    compatRaxConfig: {
+      inlineStyle: true,
+    }
   });
   fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
 };
