@@ -3,7 +3,9 @@ import spawn from 'cross-spawn';
 import path from 'path';
 import ejs from 'ejs';
 import transformBuild from './transformBuild.js';
+import transformApp from './transformApp.js';
 import mergePackage from './mergePackage.js';
+import initDocument from './initDocument.js';
 import moveFiles from './moveFiles.js';
 import type { RaxAppConfig, Config } from './transformBuild';
 import { fileURLToPath } from 'url';
@@ -41,7 +43,13 @@ export async function transform(options: TransfromOptions) {
     stdio: 'inherit',
   });
 
-  // Transfrom build.json to ice.config.mts.
+  // Transform app.js to app.tsx.
+  transformApp();
+
+  // Init document.
+  initDocument();
+
+  // Transform build.json to ice.config.mts.
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const config: Config = await transformBuild(buildJson);
   const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
