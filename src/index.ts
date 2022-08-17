@@ -44,9 +44,15 @@ export async function transform(options: TransfromOptions) {
   // Transfrom build.json to ice.config.mts.
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const config: Config = await transformBuild(buildJson);
-  if (config.iceConfig) {
-    fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), config.iceConfig, { spaces: '\t' });
-  }
+  const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
+  const iceConfigStr = await ejs.render(template, {
+    iceConfig: config.iceConfig,
+    compatRaxConfig: {
+      inlineStyle: false,
+    }
+  });
+  fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
+
   if (config.browsersListRc) {
     fse.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
   }
@@ -59,12 +65,4 @@ export async function transform(options: TransfromOptions) {
 
   // Move other files such as tsconfig and etc...
   await moveFiles(raxProjectDir, iceProjectDir);
-
-  const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
-  const iceConfigStr = await ejs.render(template, {
-    compatRaxConfig: {
-      inlineStyle: true,
-    }
-  });
-  fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
 };

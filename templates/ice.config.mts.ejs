@@ -1,9 +1,12 @@
 import { defineConfig } from '@ice/app';
 import compatRax from '@ice/plugin-rax-compat';
 
+const config = <%-JSON.stringify(iceConfig)%>
+
+if (!config.plugins) {
+  config.plugins = [];
+}
+config.plugins.push(compatRax(<%-JSON.stringify(compatRaxConfig)%>));
+
 // The project config, see https://v3.ice.work/docs/guide/basic/config
-export default defineConfig({
-  plugins: [
-    compatRax(<%-JSON.stringify(compatRaxConfig)%>)
-  ],
-});
+export default defineConfig(config);
