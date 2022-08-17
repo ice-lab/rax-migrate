@@ -61,6 +61,12 @@ export async function transform(options: TransfromOptions) {
   const raxPkg = await fse.readJSON(path.join(raxProjectDir, './package.json'));
   const icePkg = await fse.readJSON(path.join(iceProjectDir, './package.json'));
   const mergePkg = await mergePackage(raxPkg, icePkg);
+  // Delete rax-app、plugin and etc.
+  for (const key of Object.keys(mergePkg['devDependencies'] || {})) {
+    if (key.includes('rax-app')) {
+      delete mergePkg['devDependencies'][key];
+    }
+  }
   fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg, { spaces: '\t' });
 
   // Move other files such as tsconfig and etc...
