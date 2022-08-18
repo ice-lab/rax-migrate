@@ -6,6 +6,7 @@ const NotCopyList = {
   'src': true,
   'package.json': true,
   'build.json': true,
+  'node_modules': true,
 };
 
 async function moveFiles(raxProjectDir: string, iceProjectDir: string): Promise<void> {

@@ -1,7 +1,15 @@
 import { defineConfig } from '@ice/app';
+import type { UserConfig } from '@ice/app';
 import compatRax from '@ice/plugin-rax-compat';
 
-const config = <%-JSON.stringify(iceConfig)%>
+const config: UserConfig = <%-JSON.stringify(iceConfig)%>
+
+// TODO: Delete bundle and format, there is currently a problem with ems packaging.
+if (!config.server) {
+  config.server = {};
+}
+config.server.bundle = true;
+config.server.format = 'cjs';
 
 if (!config.plugins) {
   config.plugins = [];

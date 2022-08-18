@@ -3,9 +3,7 @@ import spawn from 'cross-spawn';
 import path from 'path';
 import ejs from 'ejs';
 import transformBuild from './transformBuild.js';
-import transformApp from './transformApp.js';
 import mergePackage from './mergePackage.js';
-import initDocument from './initDocument.js';
 import moveFiles from './moveFiles.js';
 import type { RaxAppConfig, Config } from './transformBuild';
 import { fileURLToPath } from 'url';
@@ -44,10 +42,16 @@ export async function transform(options: TransfromOptions) {
   });
 
   // Transform app.js to app.tsx.
-  transformApp();
+  const appStr = fse.readFileSync(path.join(raxProjectDir, './src/app.js'), 'utf-8');
+  let iceAppStr = appStr.replace(/runApp/g, 'defineAppConfig').replace(/rax-app/g, 'ice');
+  iceAppStr += 'export default defineAppConfig;';
+  fse.writeFileSync(path.join(iceProjectDir, './src/app.tsx'), iceAppStr);
+  // Delete app.js of ice project.
+  spawn.sync('rm', [path.join(iceProjectDir, './src/app.js')], { stdio: 'inherit' });
 
   // Init document.
-  initDocument();
+  const documentStr = fse.readFileSync(path.join(__dirname, '../templates/document.tsx'), 'utf-8');
+  fse.writeFileSync(path.join(iceProjectDir, './src/document.tsx'), documentStr);
 
   // Transform build.json to ice.config.mts.
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
