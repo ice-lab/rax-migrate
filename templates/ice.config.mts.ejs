@@ -4,6 +4,13 @@ import compatRax from '@ice/plugin-rax-compat';
 
 const config: UserConfig = <%-JSON.stringify(iceConfig)%>
 
+// Compat alias, alias is relative path in rax build.json. 
+if (config.alias) {
+  for (let [key, value] of Object.entries(config.alias)) {
+    config.alias[key] = path.resolve(process.cwd(), value)
+  }
+}
+
 // TODO: Delete bundle and format, there is currently a problem with ems packaging.
 if (!config.server) {
   config.server = {};
