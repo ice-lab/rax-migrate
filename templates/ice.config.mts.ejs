@@ -16,5 +16,9 @@ if (!config.plugins) {
 }
 config.plugins.push(compatRax(<%-JSON.stringify(compatRaxConfig)%>));
 
+// Close ssg and ssr to avoid error in node.
+config.ssg = false;
+config.ssr = false;
+
 // The project config, see https://v3.ice.work/docs/guide/basic/config
 export default defineConfig(config);
