@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import path from 'path';
 import { program } from 'commander';
 import { transform } from '../esm/index.js'
 import process from 'process';

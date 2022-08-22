@@ -1,17 +1,15 @@
 {
   "name": "rax-migrate",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "A tool to support Rax project migration to ICE 3 project.",
   "type": "module",
   "bin": {
     "rax-migrate": "./bin/raxMigrateCli.js"
   },
   "files": [
+    "bin",
     "esm",
-    "cjs",
-    "es2017",
-    "dist",
-    "build"
+    "templates"
   ],
   "module": "esm/index.js",
   "exports": {
@@ -38,9 +36,9 @@
     "rax"
   ],
   "dependencies": {
-    "@swc/helpers": "^0.3.8",
     "commander": "^9.4.0",
     "cross-spawn": "^7.0.3",
+    "ejs": "^3.1.8",
     "fs-extra": "^10.1.0",
     "url": "^0.11.0"
   },

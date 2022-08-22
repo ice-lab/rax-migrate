@@ -1,17 +1,20 @@
 import fse from 'fs-extra';
-import fs from 'fs';
 import spawn from 'cross-spawn';
 import path from 'path';
+import ejs from 'ejs';
 import transformBuild from './transformBuild.js';
 import mergePackage from './mergePackage.js';
 import moveFiles from './moveFiles.js';
 import type { RaxAppConfig, Config } from './transformBuild';
+import { fileURLToPath } from 'url';
 
 interface TransfromOptions {
   rootDir: string;
   projcetName: string;
   raxProjectName: string;
 }
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function transform(options: TransfromOptions) {
   const iceProjectDir = path.resolve(process.cwd(), options.projcetName);
@@ -38,21 +41,45 @@ export async function transform(options: TransfromOptions) {
     stdio: 'inherit',
   });
 
-  // Transfrom build.json to ice.config.mts.
+  // Transform app.js to app.tsx.
+  const appStr = fse.readFileSync(path.join(raxProjectDir, './src/app.js'), 'utf-8');
+  let iceAppStr = appStr.replace(/runApp/g, 'defineAppConfig').replace(/rax-app/g, 'ice');
+  iceAppStr += 'export default defineAppConfig;';
+  fse.writeFileSync(path.join(iceProjectDir, './src/app.tsx'), iceAppStr);
+  // Delete app.js of ice project.
+  spawn.sync('rm', [path.join(iceProjectDir, './src/app.js')], { stdio: 'inherit' });
+
+  // Init document.
+  const documentStr = fse.readFileSync(path.join(__dirname, '../templates/document.tsx'), 'utf-8');
+  fse.writeFileSync(path.join(iceProjectDir, './src/document.tsx'), documentStr);
+
+  // Transform build.json to ice.config.mts.
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const config: Config = await transformBuild(buildJson);
-  if (config.iceConfig) {
-    fse.writeJson(path.join(iceProjectDir, './ice.config.mts'), config.iceConfig);
-  }
+  const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
+  const iceConfigStr = await ejs.render(template, {
+    iceConfig: config.iceConfig,
+    compatRaxConfig: {
+      inlineStyle: true,
+    }
+  });
+  fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
+
   if (config.browsersListRc) {
-    await fs.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
+    fse.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
   }
 
   // Merge package.json.
   const raxPkg = await fse.readJSON(path.join(raxProjectDir, './package.json'));
   const icePkg = await fse.readJSON(path.join(iceProjectDir, './package.json'));
   const mergePkg = await mergePackage(raxPkg, icePkg);
-  fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg);
+  // Delete rax-app、plugin and etc.
+  for (const key of Object.keys(mergePkg['devDependencies'] || {})) {
+    if (key.includes('rax-app')) {
+      delete mergePkg['devDependencies'][key];
+    }
+  }
+  fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg, { spaces: '\t' });
 
   // Move other files such as tsconfig and etc...
   await moveFiles(raxProjectDir, iceProjectDir);
