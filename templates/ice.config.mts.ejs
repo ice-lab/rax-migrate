@@ -4,7 +4,7 @@ import compatRax from '@ice/plugin-rax-compat';
 
 const config: UserConfig = <%-JSON.stringify(iceConfig)%>
 
-// Compat alias, alias is relative path in rax build.json. 
+// Compat alias, the member of alias is relative path in rax build.json. 
 if (config.alias) {
   for (let [key, value] of Object.entries(config.alias)) {
     config.alias[key] = path.resolve(process.cwd(), value)
@@ -23,7 +23,7 @@ if (!config.plugins) {
 }
 config.plugins.push(compatRax(<%-JSON.stringify(compatRaxConfig)%>));
 
-// Close ssg and ssr to avoid error in node.
+// Turn of ssg and ssr to avoid error in node.
 config.ssg = false;
 config.ssr = false;
 
