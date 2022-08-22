@@ -60,7 +60,7 @@ export async function transform(options: TransfromOptions) {
   const iceConfigStr = await ejs.render(template, {
     iceConfig: config.iceConfig,
     compatRaxConfig: {
-      inlineStyle: false,
+      inlineStyle: true,
     }
   });
   fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
