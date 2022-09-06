@@ -41,13 +41,20 @@ export async function transform(options: TransfromOptions) {
     stdio: 'inherit',
   });
 
-  // Transform app.js to app.tsx.
-  const appStr = fse.readFileSync(path.join(raxProjectDir, './src/app.js'), 'utf-8');
+  // Transform app.js/app.ts to app.tsx.
+  let appStr = '';
+  const appJsPath = path.join(raxProjectDir, './src/app.js');
+  const appTsPath = path.join(raxProjectDir, './src/app.ts');
+  if (fse.existsSync(appJsPath)) {
+    appStr = fse.readFileSync(appJsPath, 'utf-8');
+  } else if (fse.existsSync(appTsPath)) {
+    appStr = fse.readFileSync(appTsPath, 'utf-8');
+  }
   let iceAppStr = appStr.replace(/runApp/g, 'defineAppConfig').replace(/rax-app/g, 'ice');
   iceAppStr += 'export default defineAppConfig;';
   fse.writeFileSync(path.join(iceProjectDir, './src/app.tsx'), iceAppStr);
   // Delete app.js of ice project.
-  spawn.sync('rm', [path.join(iceProjectDir, './src/app.js')], { stdio: 'inherit' });
+  spawn.sync('rm', [path.join(iceProjectDir, './src/app.*')], { stdio: 'inherit' });
 
   // Init document.
   const documentStr = fse.readFileSync(path.join(__dirname, '../templates/document.tsx'), 'utf-8');
