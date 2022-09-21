@@ -12,6 +12,7 @@ export interface ICEConfig {
   compileDependencies?: Array<string> | boolean,
   eslint?: boolean | object,
   tsChecker?: boolean,
+  plugins: string[],
 }
 
 export interface RaxAppConfig {
@@ -32,6 +33,7 @@ export interface RaxAppConfig {
   terserOptions: object,
   eslint?: boolean | object,
   tsChecker?: boolean,
+  plugins?: Array<String>,
 }
 
 export interface Config {
@@ -39,9 +41,17 @@ export interface Config {
   browsersListRc?: string,
 }
 
+const PLUGINS = {
+  '@ali/build-plugin-rax-app-def': '@ali/ice-plugin-def',
+  '@ali/build-plugin-rax-faas': '@ali/build-plugin-faas',
+  // TODO: @ali/build-plugin-track-info-register
+}
+
 async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
   const config: Config = {
-    iceConfig: {},
+    iceConfig: {
+      plugins: [],
+    },
   };
 
   // TODO: support other options of build.json.
@@ -88,6 +98,16 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
   ].forEach(key => {
     if (buildJson[key] !== undefined) {
       config.iceConfig[key] = buildJson[key];
+    }
+  })
+
+  // Mapping the plugins.
+  buildJson.plugins.forEach((raxPlugin: string) => {
+    const icePluginName = PLUGINS[raxPlugin];
+    if (icePluginName) {
+      config.iceConfig.plugins.push(icePluginName);
+    } else {
+      console.warn(`There is no ICE plugin that can be automatically replaced ${raxPlugin} plugin at present, please manually confirm whether it is needed.`);
     }
   })
 
