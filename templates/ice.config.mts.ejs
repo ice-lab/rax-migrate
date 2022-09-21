@@ -1,6 +1,7 @@
 import { defineConfig } from '@ice/app';
 import type { UserConfig } from '@ice/app';
 import compatRax from '@ice/plugin-rax-compat';
+import jsxplus from '@ice/plugin-jsx-plus';
 
 const config: UserConfig = <%-JSON.stringify(iceConfig)%>
 
@@ -22,6 +23,7 @@ if (!config.plugins) {
   config.plugins = [];
 }
 config.plugins.push(compatRax(<%-JSON.stringify(compatRaxConfig)%>));
+config.plugins.push(jsxplus());
 
 // Turn of ssg and ssr to avoid error in node.
 config.ssg = false;
