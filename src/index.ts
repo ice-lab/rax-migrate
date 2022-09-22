@@ -58,6 +58,7 @@ export async function transform(options: TransfromOptions) {
   const config: Config = await transformBuild(buildJson);
   const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
   const iceConfigStr = await ejs.render(template, {
+    transfromPlugins: config.transfromPlugins,
     iceConfig: config.iceConfig,
     compatRaxConfig: {
       inlineStyle: true,

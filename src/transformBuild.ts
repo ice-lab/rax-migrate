@@ -39,6 +39,7 @@ export interface RaxAppConfig {
 export interface Config {
   iceConfig: ICEConfig,
   browsersListRc?: string,
+  transfromPlugins: Array<boolean>,
 }
 
 const PLUGINS = {
@@ -52,6 +53,7 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     iceConfig: {
       plugins: [],
     },
+    transfromPlugins: [],
   };
 
   // TODO: support other options of build.json.
@@ -105,7 +107,7 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
   buildJson.plugins.forEach((raxPlugin: string) => {
     const icePluginName = PLUGINS[raxPlugin];
     if (icePluginName) {
-      config.iceConfig.plugins.push(icePluginName);
+      config.transfromPlugins.push(icePluginName);
     } else {
       console.warn(`There is no ICE plugin that can be automatically replaced ${raxPlugin} plugin at present, please manually confirm whether it is needed.`);
     }

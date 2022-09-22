@@ -2,6 +2,9 @@ import { defineConfig } from '@ice/app';
 import type { UserConfig } from '@ice/app';
 import compatRax from '@ice/plugin-rax-compat';
 import jsxplus from '@ice/plugin-jsx-plus';
+<% (transfromPlugins || []).forEach(function(pluginPackageName){ %>
+import <%-pluginPackageName.slice(pluginPackageName.indexOf('/') + 1, pluginPackageName.length).replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())%> from '<%-pluginPackageName%>'
+<% }); %>
 
 const config: UserConfig = <%-JSON.stringify(iceConfig)%>
 
@@ -24,6 +27,9 @@ if (!config.plugins) {
 }
 config.plugins.push(compatRax(<%-JSON.stringify(compatRaxConfig)%>));
 config.plugins.push(jsxplus());
+<% (transfromPlugins || []).forEach(function(pluginPackageName){ %>
+config.plugins.push(<%-pluginPackageName.slice(pluginPackageName.indexOf('/') + 1, pluginPackageName.length).replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())%>());
+<% }); %>
 
 // Turn of ssg and ssr to avoid error in node.
 config.ssg = false;
