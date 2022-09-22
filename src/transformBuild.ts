@@ -34,6 +34,8 @@ export interface RaxAppConfig {
   eslint?: boolean | object,
   tsChecker?: boolean,
   plugins?: Array<String>,
+  webpackPlugins?: Array<String>,
+  webpackLoaders?: Array<String>,
 }
 
 export interface Config {
@@ -82,6 +84,20 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     console.warn('TerserOptions has been deprecated and the minify parameter is recommended.');
   }
 
+  // Mapping the rax plugins to ice plugins.
+  buildJson.plugins.forEach((raxPlugin: string) => {
+    const icePluginName = PLUGINS[raxPlugin];
+    if (icePluginName) {
+      config.transfromPlugins.push(icePluginName);
+    } else {
+      console.warn(`There is no ICE plugin that can be automatically replaced ${raxPlugin} plugin at present, please manually confirm whether it is needed.`);
+    }
+  })
+
+  if (buildJson.webpackPlugins) {
+
+  }
+
   // Mapping the same config.
   [
     'alias',
@@ -100,16 +116,6 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
   ].forEach(key => {
     if (buildJson[key] !== undefined) {
       config.iceConfig[key] = buildJson[key];
-    }
-  })
-
-  // Mapping the plugins.
-  buildJson.plugins.forEach((raxPlugin: string) => {
-    const icePluginName = PLUGINS[raxPlugin];
-    if (icePluginName) {
-      config.transfromPlugins.push(icePluginName);
-    } else {
-      console.warn(`There is no ICE plugin that can be automatically replaced ${raxPlugin} plugin at present, please manually confirm whether it is needed.`);
     }
   })
 

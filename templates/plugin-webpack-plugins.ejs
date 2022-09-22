@@ -1,0 +1,19 @@
+const webpackPlugins = <%-JSON.stringify(webpackPlugins)%>;
+
+const plugin = () => ({
+  name: 'plugin-webpack-plugins',
+  setup: ({ onGetConfig }) => {
+    onGetConfig((config) => {
+      config.configureWebpack ??= [];
+      config.configureWebpack.push((webpackConfig) => {
+        for (const [webpackPluginName, config] of Object.entries(webpackPlugins)) {
+          webpackConfig.plugins.push(
+            new webpackPluginName(config.options)
+          );
+        }
+      })
+    })
+  }
+});
+
+export default plugin;
