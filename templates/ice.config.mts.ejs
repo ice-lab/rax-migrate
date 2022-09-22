@@ -1,6 +1,8 @@
 import { defineConfig } from '@ice/app';
 import type { UserConfig } from '@ice/app';
 import compatRax from '@ice/plugin-rax-compat';
+import path from 'path';
+import weexExternals from './plugin-weex-external.js';
 
 const config: UserConfig = <%-JSON.stringify(iceConfig)%>
 
@@ -21,6 +23,8 @@ config.server.format = 'cjs';
 if (!config.plugins) {
   config.plugins = [];
 }
+
+config.plugins.push(weexExternals());
 config.plugins.push(compatRax(<%-JSON.stringify(compatRaxConfig)%>));
 
 // Turn of ssg and ssr to avoid error in node.
