@@ -60,6 +60,16 @@ export async function transform(options: TransfromOptions) {
   const documentStr = fse.readFileSync(path.join(__dirname, '../templates/document.tsx'), 'utf-8');
   fse.writeFileSync(path.join(iceProjectDir, './src/document.tsx'), documentStr);
 
+  // Copy plugins.
+  spawn.sync('cp',
+    [
+      '-r',
+      path.join(__dirname, '../plugins'),
+      path.join(iceProjectDir, './')
+    ], {
+    stdio: 'inherit',
+  });
+
   // Transform build.json to ice.config.mts.
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const config: Config = await transformBuild(buildJson);
