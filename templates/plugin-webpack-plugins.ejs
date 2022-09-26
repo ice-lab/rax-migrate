@@ -6,11 +6,11 @@ const plugin = () => ({
     onGetConfig((config) => {
       config.configureWebpack ??= [];
       config.configureWebpack.push((webpackConfig) => {
-        for (const [webpackPluginName, config] of Object.entries(webpackPlugins)) {
-          webpackConfig.plugins.push(
-            new webpackPluginName(config.options)
-          );
-        }
+        <% for (const [webpackPluginName, config] of Object.entries(webpackPlugins)) { %>
+        webpackConfig.plugins.push(
+          new <%-webpackPluginName%>(<%-JSON.stringify(config.options)%>)
+        );
+        <% }; %>
       })
     })
   }

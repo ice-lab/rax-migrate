@@ -25,11 +25,13 @@ export async function transform(options: TransfromOptions) {
     stdio: 'inherit',
   });
 
+
   // Remove default src.
   spawn.sync('rm', ['-rf', 'src'], {
     cwd: iceProjectDir,
     stdio: 'inherit',
   });
+
 
   // Copy src of rax project to ice project.
   spawn.sync('cp',
@@ -40,6 +42,7 @@ export async function transform(options: TransfromOptions) {
     ], {
     stdio: 'inherit',
   });
+
 
   // Transform app.js/app.ts to app.tsx.
   let appStr = '';
@@ -56,9 +59,11 @@ export async function transform(options: TransfromOptions) {
   // Delete app.js of ice project.
   spawn.sync('rm', [path.join(iceProjectDir, './src/app.*')], { stdio: 'inherit' });
 
+
   // Init document.
   const documentStr = fse.readFileSync(path.join(__dirname, '../templates/document.tsx'), 'utf-8');
   fse.writeFileSync(path.join(iceProjectDir, './src/document.tsx'), documentStr);
+
 
   // Copy plugins.
   spawn.sync('cp',
@@ -70,9 +75,23 @@ export async function transform(options: TransfromOptions) {
     stdio: 'inherit',
   });
 
+
   // Transform build.json to ice.config.mts.
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const config: Config = await transformBuild(buildJson);
+
+  if (config.webpackPlugins) {
+    const webpackPluginsStr = await ejs.render(
+      fse.readFileSync(
+        path.join(__dirname, '../templates/plugin-webpack-plugins.ejs'),
+        'utf-8'
+      ), {
+      webpackPlugins: config.webpackPlugins
+    }
+    );
+    fse.writeFileSync(path.join(iceProjectDir, 'plugins', './plugin-webpack-plugins.js'), webpackPluginsStr);
+  }
+
   const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
   const iceConfigStr = await ejs.render(template, {
     transfromPlugins: config.transfromPlugins,
@@ -83,9 +102,11 @@ export async function transform(options: TransfromOptions) {
   });
   fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
 
+
   if (config.browsersListRc) {
     fse.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
   }
+
 
   // Merge package.json.
   const raxPkg = await fse.readJSON(path.join(raxProjectDir, './package.json'));
@@ -98,6 +119,7 @@ export async function transform(options: TransfromOptions) {
     }
   }
   fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg, { spaces: '\t' });
+
 
   // Move other files such as tsconfig and etc...
   await moveFiles(raxProjectDir, iceProjectDir);

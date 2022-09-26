@@ -42,6 +42,8 @@ export interface Config {
   iceConfig: ICEConfig,
   browsersListRc?: string,
   transfromPlugins: Array<boolean>,
+  webpackPlugins?: Array<String>,
+  webpackLoaders?: Array<String>,
 }
 
 const PLUGINS = {
@@ -94,9 +96,8 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     }
   })
 
-  if (buildJson.webpackPlugins) {
-
-  }
+  config.webpackPlugins = buildJson.webpackPlugins;
+  config.webpackLoaders = buildJson.webpackLoaders;
 
   // Mapping the same config.
   [
