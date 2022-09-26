@@ -2,11 +2,11 @@ import fse from 'fs-extra';
 import spawn from 'cross-spawn';
 import path from 'path';
 import ejs from 'ejs';
+import { fileURLToPath } from 'url';
 import transformBuild from './transformBuild.js';
 import mergePackage from './mergePackage.js';
 import moveFiles from './moveFiles.js';
 import type { RaxAppConfig, Config } from './transformBuild';
-import { fileURLToPath } from 'url';
 
 interface TransfromOptions {
   rootDir: string;
@@ -83,34 +83,47 @@ export async function transform(options: TransfromOptions) {
   const {
     webpackPlugins,
     webpackLoaders,
+    babelPlugins,
+    babelPresets
   } = config;
+
+  async function createExtraPugin({
+    templateName = '',
+    options = {},
+  }) {
+    const str = await ejs.render(
+      fse.readFileSync(
+        path.join(__dirname, `../templates/${templateName}.ejs`),
+        'utf-8'
+      ), options
+    );
+    fse.writeFileSync(path.join(iceProjectDir, 'plugins', `./${templateName}.js`), str);
+    config.extraPlugins.push(`./plugins/${templateName}.js`);
+  }
 
   // Deal with custom webpack plugins.
   if (webpackPlugins) {
-    const webpackPluginsStr = await ejs.render(
-      fse.readFileSync(
-        path.join(__dirname, '../templates/plugin-webpack-plugins.ejs'),
-        'utf-8'
-      ), {
-      webpackPlugins
-    }
-    );
-    fse.writeFileSync(path.join(iceProjectDir, 'plugins', './plugin-webpack-plugins.js'), webpackPluginsStr);
-    config.extraPlugins.push('./plugins/plugin-webpack-plugins.js');
+    await createExtraPugin({
+      templateName: 'plugin-webpack-plugins',
+      options: { webpackPlugins },
+    });
   }
 
   // Deal with custom webpack loaders.
   if (webpackLoaders) {
-    const webpackLoadersStr = await ejs.render(
-      fse.readFileSync(
-        path.join(__dirname, '../templates/plugin-webpack-loaders.ejs'),
-        'utf-8'
-      ), {
-      webpackLoaders
-    }
-    );
-    fse.writeFileSync(path.join(iceProjectDir, 'plugins', './plugin-webpack-loaders.js'), webpackLoadersStr);
-    config.extraPlugins.push('./plugins/plugin-webpack-loaders.js');
+    await createExtraPugin({
+      templateName: 'plugin-webpack-loaders',
+      options: { webpackLoaders },
+    });
+  }
+  console.log('babelPlugins=', babelPlugins)
+  console.log('babelPresets=', babelPresets)
+  // Deal with custom babel loaders.
+  if (babelPlugins || babelPresets) {
+    await createExtraPugin({
+      templateName: 'plugin-babel-loaders',
+      options: { babelPlugins, babelPresets },
+    });
   }
 
   const iceConfigStr = await ejs.render(fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8'), {

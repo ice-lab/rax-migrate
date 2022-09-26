@@ -9,7 +9,7 @@ const plugin = () => ({
         webpackConfig.module ??= {};
         webpackConfig.module.rules ??= [];
         <% for (const [webpackLoaderName, config] of Object.entries(webpackLoaders)) { %>
-        addLoader(webpackConfig, config);
+        return addLoader(webpackConfig, config);
         <% }; %>
       });
 

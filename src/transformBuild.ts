@@ -36,6 +36,8 @@ export interface RaxAppConfig {
   plugins?: Array<String>,
   webpackPlugins?: Array<String>,
   webpackLoaders?: Array<String>,
+  babelPlugins?: Array<string>,
+  babelPresets?: Array<string>,
 }
 
 export interface Config {
@@ -44,6 +46,8 @@ export interface Config {
   extraPlugins: Array<String>,
   webpackPlugins?: Array<String>,
   webpackLoaders?: Array<String>,
+  babelPlugins?: Array<string>,
+  babelPresets?: Array<string>,
 }
 
 const PLUGINS = {
@@ -98,6 +102,8 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
 
   config.webpackPlugins = buildJson.webpackPlugins;
   config.webpackLoaders = buildJson.webpackLoaders;
+  config.babelPlugins = buildJson.babelPlugins;
+  config.babelPresets = buildJson.babelPresets;
 
   // Mapping the same config.
   [
