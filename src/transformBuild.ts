@@ -43,6 +43,7 @@ export interface RaxAppConfig {
   cssLoaderOptions?: Object,
   lessLoaderOptions?: Object,
   sassLoaderOptions?: Object,
+  devServer?: Object,
 }
 
 export interface Config {
@@ -58,6 +59,7 @@ export interface Config {
   cssLoaderOptions?: Object,
   lessLoaderOptions?: Object,
   sassLoaderOptions?: Object,
+  devServer?: Object,
 }
 
 const PLUGINS = {
@@ -124,6 +126,7 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     'cssLoaderOptions',
     'lessLoaderOptions',
     'sassLoaderOptions',
+    'devServer',
   ].forEach(key => {
     config[key] = buildJson[key];
   });

@@ -90,6 +90,7 @@ export async function transform(options: TransfromOptions) {
     cssLoaderOptions,
     lessLoaderOptions,
     sassLoaderOptions,
+    devServer,
   } = config;
 
   async function createExtraPugin({
@@ -165,6 +166,13 @@ export async function transform(options: TransfromOptions) {
       templateName: 'plugin-general-loaders',
       outputFilename: 'plugin-sass-loader',
       options: { loaderName: 'plugin-sass-loader', loaderOptions: sassLoaderOptions },
+    });
+  }
+
+  if (devServer) {
+    await createExtraPugin({
+      templateName: 'plugin-dev-server',
+      options: { devServer },
     });
   }
 
