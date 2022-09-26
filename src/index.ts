@@ -96,6 +96,7 @@ export async function transform(options: TransfromOptions) {
     }
     );
     fse.writeFileSync(path.join(iceProjectDir, 'plugins', './plugin-webpack-plugins.js'), webpackPluginsStr);
+    config.extraPlugins.push('./plugins/plugin-webpack-plugins.js');
   }
 
   // Deal with custom webpack loaders.
@@ -109,10 +110,11 @@ export async function transform(options: TransfromOptions) {
     }
     );
     fse.writeFileSync(path.join(iceProjectDir, 'plugins', './plugin-webpack-loaders.js'), webpackLoadersStr);
+    config.extraPlugins.push('./plugins/plugin-webpack-loaders.js');
   }
 
   const iceConfigStr = await ejs.render(fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8'), {
-    transfromPlugins: config.transfromPlugins,
+    extraPlugins: config.extraPlugins,
     iceConfig: config.iceConfig,
     compatRaxConfig: {
       inlineStyle: true,

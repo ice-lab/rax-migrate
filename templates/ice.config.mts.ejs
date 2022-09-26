@@ -3,8 +3,8 @@ import type { UserConfig } from '@ice/app';
 import compatRax from '@ice/plugin-rax-compat';
 import jsxplus from '@ice/plugin-jsx-plus';
 import path from 'path';
-<% (transfromPlugins || []).forEach(function(pluginPackageName){ %>
-import <%-pluginPackageName.slice(pluginPackageName.indexOf('/') + 1, pluginPackageName.length).replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())%> from '<%-pluginPackageName%>'
+<% (extraPlugins || []).forEach(function(pluginPackageName){ %>
+import <%-pluginPackageName.slice(pluginPackageName.lastIndexOf('/') + 1, pluginPackageName.length).replace('.js', '').replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())%> from '<%-pluginPackageName%>'
 <% }); %>
 import weexExternals from './plugin-weex-external.js';
 
@@ -32,8 +32,8 @@ if (!config.plugins) {
 config.plugins.push(weexExternals());
 config.plugins.push(compatRax(<%-JSON.stringify(compatRaxConfig)%>));
 config.plugins.push(jsxplus());
-<% (transfromPlugins || []).forEach(function(pluginPackageName){ %>
-config.plugins.push(<%-pluginPackageName.slice(pluginPackageName.indexOf('/') + 1, pluginPackageName.length).replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())%>());
+<% (extraPlugins || []).forEach(function(pluginPackageName){ %>
+config.plugins.push(<%-pluginPackageName.slice(pluginPackageName.lastIndexOf('/') + 1, pluginPackageName.length).replace('.js', '').replace(/\-(\w)/g, (all, letter) => letter.toUpperCase())%>());
 <% }); %>
 
 // Turn of ssg and ssr to avoid error in node.
