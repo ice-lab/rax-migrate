@@ -84,7 +84,9 @@ export async function transform(options: TransfromOptions) {
     webpackPlugins,
     webpackLoaders,
     babelPlugins,
-    babelPresets
+    babelPresets,
+    postcssrc,
+    postcssOptions,
   } = config;
 
   async function createExtraPugin({
@@ -122,6 +124,14 @@ export async function transform(options: TransfromOptions) {
     await createExtraPugin({
       templateName: 'plugin-babel-loaders',
       options: { babelPlugins, babelPresets },
+    });
+  }
+
+  // Deal with custom postcss options.
+  if (postcssOptions || postcssrc) {
+    await createExtraPugin({
+      templateName: 'plugin-postcss',
+      options: { postcssrc: postcssrc === undefined ? false : postcssrc, postcssOptions },
     });
   }
 

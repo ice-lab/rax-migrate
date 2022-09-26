@@ -38,6 +38,8 @@ export interface RaxAppConfig {
   webpackLoaders?: Array<String>,
   babelPlugins?: Array<string>,
   babelPresets?: Array<string>,
+  postcssrc?: boolean,
+  postcssOptions?: Object,
 }
 
 export interface Config {
@@ -48,6 +50,8 @@ export interface Config {
   webpackLoaders?: Array<String>,
   babelPlugins?: Array<string>,
   babelPresets?: Array<string>,
+  postcssrc?: boolean,
+  postcssOptions?: Object,
 }
 
 const PLUGINS = {
@@ -98,14 +102,21 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     } else {
       console.warn(`There is no ICE plugin that can be automatically replaced ${raxPlugin} plugin at present, please manually confirm whether it is needed.`);
     }
-  })
+  });
 
-  config.webpackPlugins = buildJson.webpackPlugins;
-  config.webpackLoaders = buildJson.webpackLoaders;
-  config.babelPlugins = buildJson.babelPlugins;
-  config.babelPresets = buildJson.babelPresets;
+  // Mapping the same config to config.
+  [
+    'webpackPlugins',
+    'webpackLoaders',
+    'babelPlugins',
+    'babelPresets',
+    'postcssrc',
+    'postcssOptions',
+  ].forEach(key => {
+    config[key] = buildJson[key];
+  });
 
-  // Mapping the same config.
+  // Mapping the same config to iceConfig.
   [
     'alias',
     'publicPath',
