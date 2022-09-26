@@ -1,5 +1,3 @@
-const webpackPlugins = <%-JSON.stringify(webpackPlugins)%>;
-
 const plugin = () => ({
   name: 'plugin-webpack-plugins',
   setup: ({ onGetConfig }) => {
@@ -11,7 +9,9 @@ const plugin = () => ({
           new <%-webpackPluginName%>(<%-JSON.stringify(config.options)%>)
         );
         <% }; %>
-      })
+      });
+
+      return config;
     })
   }
 });

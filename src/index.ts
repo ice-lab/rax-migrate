@@ -57,7 +57,7 @@ export async function transform(options: TransfromOptions) {
   iceAppStr += 'export default defineAppConfig;';
   fse.writeFileSync(path.join(iceProjectDir, './src/app.tsx'), iceAppStr);
   // Delete app.js of ice project.
-  spawn.sync('rm', [path.join(iceProjectDir, './src/app.*')], { stdio: 'inherit' });
+  spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.*')], { stdio: 'inherit' });
 
 
   // Init document.
@@ -80,20 +80,38 @@ export async function transform(options: TransfromOptions) {
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const config: Config = await transformBuild(buildJson);
 
-  if (config.webpackPlugins) {
+  const {
+    webpackPlugins,
+    webpackLoaders,
+  } = config;
+
+  // Deal with custom webpack plugins.
+  if (webpackPlugins) {
     const webpackPluginsStr = await ejs.render(
       fse.readFileSync(
         path.join(__dirname, '../templates/plugin-webpack-plugins.ejs'),
         'utf-8'
       ), {
-      webpackPlugins: config.webpackPlugins
+      webpackPlugins
     }
     );
     fse.writeFileSync(path.join(iceProjectDir, 'plugins', './plugin-webpack-plugins.js'), webpackPluginsStr);
   }
 
-  const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
-  const iceConfigStr = await ejs.render(template, {
+  // Deal with custom webpack loaders.
+  if (webpackLoaders) {
+    const webpackLoadersStr = await ejs.render(
+      fse.readFileSync(
+        path.join(__dirname, '../templates/plugin-webpack-loaders.ejs'),
+        'utf-8'
+      ), {
+      webpackLoaders
+    }
+    );
+    fse.writeFileSync(path.join(iceProjectDir, 'plugins', './plugin-webpack-loaders.js'), webpackLoadersStr);
+  }
+
+  const iceConfigStr = await ejs.render(fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8'), {
     transfromPlugins: config.transfromPlugins,
     iceConfig: config.iceConfig,
     compatRaxConfig: {
