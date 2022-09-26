@@ -116,8 +116,7 @@ export async function transform(options: TransfromOptions) {
       options: { webpackLoaders },
     });
   }
-  console.log('babelPlugins=', babelPlugins)
-  console.log('babelPresets=', babelPresets)
+
   // Deal with custom babel loaders.
   if (babelPlugins || babelPresets) {
     await createExtraPugin({
