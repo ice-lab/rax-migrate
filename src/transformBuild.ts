@@ -96,9 +96,12 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     }
   }
 
-  if (buildJson.terserOptions) {
-    console.warn('TerserOptions has been deprecated and the minify parameter is recommended.');
-  }
+  // Warning deprecated config.
+  ['esbuild', 'vendor', 'modularImportRuntime', 'terserOptions'].forEach(configName => {
+    if (buildJson[configName]) {
+      console.warn(`The config '${configName}' has been deprecated, please check it.`);
+    }
+  })
 
   // Mapping the rax plugins to ice plugins.
   buildJson.plugins.forEach((raxPlugin: string) => {
