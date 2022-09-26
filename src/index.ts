@@ -87,10 +87,14 @@ export async function transform(options: TransfromOptions) {
     babelPresets,
     postcssrc,
     postcssOptions,
+    cssLoaderOptions,
+    lessLoaderOptions,
+    sassLoaderOptions,
   } = config;
 
   async function createExtraPugin({
     templateName = '',
+    outputFilename = '',
     options = {},
   }) {
     const str = await ejs.render(
@@ -99,8 +103,10 @@ export async function transform(options: TransfromOptions) {
         'utf-8'
       ), options
     );
-    fse.writeFileSync(path.join(iceProjectDir, 'plugins', `./${templateName}.js`), str);
-    config.extraPlugins.push(`./plugins/${templateName}.js`);
+
+    outputFilename = outputFilename || templateName;
+    fse.writeFileSync(path.join(iceProjectDir, 'plugins', `./${outputFilename}.js`), str);
+    config.extraPlugins.push(`./plugins/${outputFilename}.js`);
   }
 
   // Deal with custom webpack plugins.
@@ -132,6 +138,33 @@ export async function transform(options: TransfromOptions) {
     await createExtraPugin({
       templateName: 'plugin-postcss',
       options: { postcssrc: postcssrc === undefined ? false : postcssrc, postcssOptions },
+    });
+  }
+
+  // Deal with custom css loader options.
+  if (cssLoaderOptions) {
+    await createExtraPugin({
+      templateName: 'plugin-general-loaders',
+      outputFilename: 'plugin-css-loader',
+      options: { loaderName: 'plugin-css-loader', loaderOptions: cssLoaderOptions },
+    });
+  }
+
+  // Deal with custom less loader options.
+  if (lessLoaderOptions) {
+    await createExtraPugin({
+      templateName: 'plugin-general-loaders',
+      outputFilename: 'plugin-less-loader',
+      options: { loaderName: 'plugin-less-loader', loaderOptions: lessLoaderOptions },
+    });
+  }
+
+  // Deal with custom sass loader options.
+  if (sassLoaderOptions) {
+    await createExtraPugin({
+      templateName: 'plugin-general-loaders',
+      outputFilename: 'plugin-sass-loader',
+      options: { loaderName: 'plugin-sass-loader', loaderOptions: sassLoaderOptions },
     });
   }
 

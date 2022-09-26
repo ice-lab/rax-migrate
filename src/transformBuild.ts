@@ -40,6 +40,9 @@ export interface RaxAppConfig {
   babelPresets?: Array<string>,
   postcssrc?: boolean,
   postcssOptions?: Object,
+  cssLoaderOptions?: Object,
+  lessLoaderOptions?: Object,
+  sassLoaderOptions?: Object,
 }
 
 export interface Config {
@@ -52,6 +55,9 @@ export interface Config {
   babelPresets?: Array<string>,
   postcssrc?: boolean,
   postcssOptions?: Object,
+  cssLoaderOptions?: Object,
+  lessLoaderOptions?: Object,
+  sassLoaderOptions?: Object,
 }
 
 const PLUGINS = {
@@ -112,6 +118,9 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     'babelPresets',
     'postcssrc',
     'postcssOptions',
+    'cssLoaderOptions',
+    'lessLoaderOptions',
+    'sassLoaderOptions',
   ].forEach(key => {
     config[key] = buildJson[key];
   });
