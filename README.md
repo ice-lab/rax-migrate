@@ -1,6 +1,6 @@
 # rax-migrate
 
-A tool to support Rax project migration to ICE 3 project.
+A tool for rax project to migrate into ICE 3 project.
 
 ## Install
 

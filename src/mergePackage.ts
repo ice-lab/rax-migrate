@@ -1,7 +1,7 @@
 const extraDependencies = {
-  '@ice/plugin-rax-compat': 'beta',
-  '@ice/plugin-jsx-plus': 'release',
-  '@ice/webpack-modify': '^1.0.0',
+  '@ice/plugin-rax-compat': 'latest',
+  '@ice/plugin-jsx-plus': 'latest',
+  '@ice/webpack-modify': 'latest',
 };
 
 function mergePackage(raxPkg: object, icePkg: object): object {
