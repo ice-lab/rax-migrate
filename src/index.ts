@@ -2,11 +2,11 @@ import fse from 'fs-extra';
 import spawn from 'cross-spawn';
 import path from 'path';
 import ejs from 'ejs';
+import { fileURLToPath } from 'url';
 import transformBuild from './transformBuild.js';
 import mergePackage from './mergePackage.js';
 import moveFiles from './moveFiles.js';
 import type { RaxAppConfig, Config } from './transformBuild';
-import { fileURLToPath } from 'url';
 
 interface TransfromOptions {
   rootDir: string;
@@ -25,11 +25,13 @@ export async function transform(options: TransfromOptions) {
     stdio: 'inherit',
   });
 
+
   // Remove default src.
   spawn.sync('rm', ['-rf', 'src'], {
     cwd: iceProjectDir,
     stdio: 'inherit',
   });
+
 
   // Copy src of rax project to ice project.
   spawn.sync('cp',
@@ -40,6 +42,7 @@ export async function transform(options: TransfromOptions) {
     ], {
     stdio: 'inherit',
   });
+
 
   // Transform app.js/app.ts to app.tsx.
   let appStr = '';
@@ -54,11 +57,13 @@ export async function transform(options: TransfromOptions) {
   iceAppStr += 'export default defineAppConfig;';
   fse.writeFileSync(path.join(iceProjectDir, './src/app.tsx'), iceAppStr);
   // Delete app.js of ice project.
-  spawn.sync('rm', [path.join(iceProjectDir, './src/app.*')], { stdio: 'inherit' });
+  spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.*')], { stdio: 'inherit' });
+
 
   // Init document.
   const documentStr = fse.readFileSync(path.join(__dirname, '../templates/document.tsx'), 'utf-8');
   fse.writeFileSync(path.join(iceProjectDir, './src/document.tsx'), documentStr);
+
 
   // Copy plugins.
   spawn.sync('cp',
@@ -70,21 +75,121 @@ export async function transform(options: TransfromOptions) {
     stdio: 'inherit',
   });
 
+
   // Transform build.json to ice.config.mts.
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
   const config: Config = await transformBuild(buildJson);
-  const template = fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8');
-  const iceConfigStr = await ejs.render(template, {
+
+  const {
+    webpackPlugins,
+    webpackLoaders,
+    babelPlugins,
+    babelPresets,
+    postcssrc,
+    postcssOptions,
+    cssLoaderOptions,
+    lessLoaderOptions,
+    sassLoaderOptions,
+    devServer,
+  } = config;
+
+  async function createExtraPugin({
+    templateName = '',
+    outputFilename = '',
+    options = {},
+  }) {
+    const str = await ejs.render(
+      fse.readFileSync(
+        path.join(__dirname, `../templates/${templateName}.ejs`),
+        'utf-8'
+      ), options
+    );
+
+    outputFilename = outputFilename || templateName;
+    fse.writeFileSync(path.join(iceProjectDir, 'plugins', `./${outputFilename}.js`), str);
+    config.extraPlugins.push(`./plugins/${outputFilename}.js`);
+  }
+
+  // Deal with custom webpack plugins.
+  if (webpackPlugins) {
+    await createExtraPugin({
+      templateName: 'plugin-webpack-plugins',
+      options: { webpackPlugins },
+    });
+  }
+
+  // Deal with custom webpack loaders.
+  if (webpackLoaders) {
+    await createExtraPugin({
+      templateName: 'plugin-webpack-loaders',
+      options: { webpackLoaders },
+    });
+  }
+
+  // Deal with custom babel loaders.
+  if (babelPlugins || babelPresets) {
+    await createExtraPugin({
+      templateName: 'plugin-babel-loaders',
+      options: { babelPlugins, babelPresets },
+    });
+  }
+
+  // Deal with custom postcss options.
+  if (postcssOptions || postcssrc) {
+    await createExtraPugin({
+      templateName: 'plugin-postcss',
+      options: { postcssrc: postcssrc === undefined ? false : postcssrc, postcssOptions },
+    });
+  }
+
+  // Deal with custom css loader options.
+  if (cssLoaderOptions) {
+    await createExtraPugin({
+      templateName: 'plugin-general-loaders',
+      outputFilename: 'plugin-css-loader',
+      options: { loaderName: 'plugin-css-loader', loaderOptions: cssLoaderOptions },
+    });
+  }
+
+  // Deal with custom less loader options.
+  if (lessLoaderOptions) {
+    await createExtraPugin({
+      templateName: 'plugin-general-loaders',
+      outputFilename: 'plugin-less-loader',
+      options: { loaderName: 'plugin-less-loader', loaderOptions: lessLoaderOptions },
+    });
+  }
+
+  // Deal with custom sass loader options.
+  if (sassLoaderOptions) {
+    await createExtraPugin({
+      templateName: 'plugin-general-loaders',
+      outputFilename: 'plugin-sass-loader',
+      options: { loaderName: 'plugin-sass-loader', loaderOptions: sassLoaderOptions },
+    });
+  }
+
+  if (devServer) {
+    await createExtraPugin({
+      templateName: 'plugin-dev-server',
+      options: { devServer },
+    });
+  }
+
+  const iceConfigStr = await ejs.render(fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8'), {
+    extraPlugins: config.extraPlugins,
     iceConfig: config.iceConfig,
     compatRaxConfig: {
-      inlineStyle: true,
+      inlineStyle: !!config.inlineStyle,
     }
   });
   fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
 
+
   if (config.browsersListRc) {
     fse.writeFileSync(path.join(iceProjectDir, './.browserslistrc'), config.browsersListRc);
   }
+
 
   // Merge package.json.
   const raxPkg = await fse.readJSON(path.join(raxProjectDir, './package.json'));
@@ -97,6 +202,7 @@ export async function transform(options: TransfromOptions) {
     }
   }
   fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg, { spaces: '\t' });
+
 
   // Move other files such as tsconfig and etc...
   await moveFiles(raxProjectDir, iceProjectDir);

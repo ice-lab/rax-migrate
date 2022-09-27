@@ -12,6 +12,7 @@ export interface ICEConfig {
   compileDependencies?: Array<string> | boolean,
   eslint?: boolean | object,
   tsChecker?: boolean,
+  plugins: string[],
 }
 
 export interface RaxAppConfig {
@@ -32,26 +33,55 @@ export interface RaxAppConfig {
   terserOptions: object,
   eslint?: boolean | object,
   tsChecker?: boolean,
+  plugins?: Array<String>,
+  webpackPlugins?: Array<String>,
+  webpackLoaders?: Array<String>,
+  babelPlugins?: Array<string>,
+  babelPresets?: Array<string>,
+  postcssrc?: boolean,
+  postcssOptions?: Object,
+  cssLoaderOptions?: Object,
+  lessLoaderOptions?: Object,
+  sassLoaderOptions?: Object,
+  devServer?: Object,
+  polyfill?: string | false
 }
 
 export interface Config {
   iceConfig: ICEConfig,
+  inlineStyle?: boolean | { forceEnableCSS: boolean },
   browsersListRc?: string,
+  extraPlugins: Array<String>,
+  webpackPlugins?: Array<String>,
+  webpackLoaders?: Array<String>,
+  babelPlugins?: Array<string>,
+  babelPresets?: Array<string>,
+  postcssrc?: boolean,
+  postcssOptions?: Object,
+  cssLoaderOptions?: Object,
+  lessLoaderOptions?: Object,
+  sassLoaderOptions?: Object,
+  devServer?: Object,
+}
+
+const PLUGINS = {
+  '@ali/build-plugin-rax-app-def': '@ali/ice-plugin-def',
+  '@ali/build-plugin-rax-faas': '@ali/build-plugin-faas',
+  // TODO: @ali/build-plugin-track-info-register
 }
 
 async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
   const config: Config = {
-    iceConfig: {},
+    iceConfig: {
+      plugins: [],
+    },
+    extraPlugins: [],
   };
 
   // TODO: support other options of build.json.
 
   if (!buildJson.webpack5) {
     console.warn('The Rax project currently uses Webpack4, but ICE3 uses Webpack5. Please be aware of the differences.');
-  }
-
-  if (buildJson.inlineStyle) {
-    // TODO:
   }
 
   if (buildJson.browserslist) {
@@ -66,11 +96,41 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     }
   }
 
-  if (buildJson.terserOptions) {
-    console.warn('TerserOptions has been deprecated and the minify parameter is recommended.');
-  }
+  // Warning deprecated config.
+  ['esbuild', 'vendor', 'modularImportRuntime', 'terserOptions', 'polyfill'].forEach(configName => {
+    if (buildJson[configName]) {
+      console.warn(`The config '${configName}' has been deprecated, please check it.`);
+    }
+  })
 
-  // Mapping the same config.
+  // Mapping the rax plugins to ice plugins.
+  buildJson.plugins.forEach((raxPlugin: string) => {
+    const icePluginName = PLUGINS[raxPlugin];
+    if (icePluginName) {
+      config.extraPlugins.push(icePluginName);
+    } else {
+      console.warn(`There is no ICE plugin that can be automatically replaced ${raxPlugin} plugin at present, please manually confirm whether it is needed.`);
+    }
+  });
+
+  // Mapping the same config to config.
+  [
+    'webpackPlugins',
+    'webpackLoaders',
+    'babelPlugins',
+    'babelPresets',
+    'postcssrc',
+    'postcssOptions',
+    'cssLoaderOptions',
+    'lessLoaderOptions',
+    'sassLoaderOptions',
+    'devServer',
+    'inlineStyle',
+  ].forEach(key => {
+    config[key] = buildJson[key];
+  });
+
+  // Mapping the same config to iceConfig.
   [
     'alias',
     'publicPath',
