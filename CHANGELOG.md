@@ -16,3 +16,4 @@
   * vendor
   * modularImportRuntime
   * devServer
+  * polyfill

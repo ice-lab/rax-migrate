@@ -44,6 +44,7 @@ export interface RaxAppConfig {
   lessLoaderOptions?: Object,
   sassLoaderOptions?: Object,
   devServer?: Object,
+  polyfill?: string | false
 }
 
 export interface Config {
@@ -96,7 +97,7 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
   }
 
   // Warning deprecated config.
-  ['esbuild', 'vendor', 'modularImportRuntime', 'terserOptions'].forEach(configName => {
+  ['esbuild', 'vendor', 'modularImportRuntime', 'terserOptions', 'polyfill'].forEach(configName => {
     if (buildJson[configName]) {
       console.warn(`The config '${configName}' has been deprecated, please check it.`);
     }
