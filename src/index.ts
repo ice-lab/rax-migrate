@@ -180,7 +180,7 @@ export async function transform(options: TransfromOptions) {
     extraPlugins: config.extraPlugins,
     iceConfig: config.iceConfig,
     compatRaxConfig: {
-      inlineStyle: true,
+      inlineStyle: !!config.inlineStyle,
     }
   });
   fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);

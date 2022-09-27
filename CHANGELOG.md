@@ -15,3 +15,4 @@
   * esbuild
   * vendor
   * modularImportRuntime
+  * devServer

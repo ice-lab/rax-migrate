@@ -48,6 +48,7 @@ export interface RaxAppConfig {
 
 export interface Config {
   iceConfig: ICEConfig,
+  inlineStyle?: boolean | { forceEnableCSS: boolean },
   browsersListRc?: string,
   extraPlugins: Array<String>,
   webpackPlugins?: Array<String>,
@@ -80,10 +81,6 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
 
   if (!buildJson.webpack5) {
     console.warn('The Rax project currently uses Webpack4, but ICE3 uses Webpack5. Please be aware of the differences.');
-  }
-
-  if (buildJson.inlineStyle) {
-    // TODO:
   }
 
   if (buildJson.browserslist) {
@@ -127,6 +124,7 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     'lessLoaderOptions',
     'sassLoaderOptions',
     'devServer',
+    'inlineStyle',
   ].forEach(key => {
     config[key] = buildJson[key];
   });
