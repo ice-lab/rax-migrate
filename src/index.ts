@@ -201,6 +201,13 @@ export async function transform(options: TransfromOptions) {
       delete mergePkg['devDependencies'][key];
     }
   }
+
+  const devDependencies = mergePkg['devDependencies'] || {};
+  config.extraPlugins.forEach((extraPlugin: string) => {
+    if (!devDependencies[extraPlugin]) {
+      devDependencies[extraPlugin] = 'latest';
+    }
+  })
   fse.writeJson(path.join(iceProjectDir, './package.json'), mergePkg, { spaces: '\t' });
 
 
