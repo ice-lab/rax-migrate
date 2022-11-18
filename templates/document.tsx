@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { Meta, Title, Links, Main, Scripts } from 'ice';
 
 export default function Document() {

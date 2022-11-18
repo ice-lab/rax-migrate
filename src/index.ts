@@ -57,7 +57,7 @@ export async function transform(options: TransfromOptions) {
   iceAppStr += 'export default defineAppConfig;';
   fse.writeFileSync(path.join(iceProjectDir, './src/app.tsx'), iceAppStr);
   // Delete app.js of ice project.
-  spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.*')], { stdio: 'inherit' });
+  spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.js')], { stdio: 'inherit' });
 
 
   // Init document.
