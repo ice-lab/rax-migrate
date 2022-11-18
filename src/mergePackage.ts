@@ -24,7 +24,7 @@ function mergePackage(raxPkg: object, icePkg: object): object {
 
   // Add extra dependencies to dependencies.
   for (let [dep, version] of Object.entries(extraDependencies)) {
-    pkg['dependencies'][dep] = version;
+    pkg['devDependencies'][dep] = version;
   }
 
   return pkg;
