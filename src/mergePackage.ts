@@ -1,8 +1,17 @@
+import fetch from 'node-fetch';
+
 const extraDependencies = {
   '@ice/plugin-rax-compat': 'latest',
   '@ice/plugin-jsx-plus': 'latest',
   '@ice/webpack-modify': 'latest',
 };
+
+Object.keys(extraDependencies).forEach(async name => {
+  const res = await fetch(`https://registry.npm.alibaba-inc.com/${name}/latest`);
+  const version = (JSON.parse(await res.text()) || {}).version;
+  extraDependencies[name] = version;
+})
+
 
 function mergePackage(raxPkg: object, icePkg: object): object {
   let pkg = Object.assign({}, icePkg);
