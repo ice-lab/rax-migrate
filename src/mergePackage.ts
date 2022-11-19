@@ -7,7 +7,7 @@ const extraDependencies = {
 };
 
 Object.keys(extraDependencies).forEach(async name => {
-  const res = await fetch(`https://registry.npm.alibaba-inc.com/${name}/latest`);
+  const res = await fetch(`https://registry.npmmirror.com/${name}/latest`);
   const version = (JSON.parse(await res.text()) || {}).version;
   extraDependencies[name] = version;
 })
