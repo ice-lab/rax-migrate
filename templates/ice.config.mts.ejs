@@ -20,6 +20,15 @@ config.routes = {
   <% } -%>
 };
 
+// External weex modules.
+config.externals = {
+  '@weex-module/storage': 'commonjs @weex-module/storage',
+  '@weex-module/windvane': 'commonjs @weex-module/windvane',
+  '@weex-module/dom': 'commonjs @weex-module/dom',
+  '@weex-module/mtop': 'commonjs @weex-module/mtop',
+  '@weex-module/broadcast': 'commonjs @weex-module/broadcast',
+};
+
 // Compat alias, the member of alias is relative path in rax build.json. 
 if (config.alias) {
   for (let [key, value] of Object.entries(config.alias)) {
