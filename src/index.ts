@@ -198,7 +198,7 @@ export async function transform(options: TransfromOptions) {
   const icePkg = await fse.readJSON(path.join(iceProjectDir, './package.json'));
   const mergePkg = await mergePackage(raxPkg, icePkg);
   // Delete rax-app、plugin and etc.
-  for (const key of Object.keys(mergePkg['devDependencies'] || {})) {
+  for (const key of Object.keys(Object.assign(mergePkg['devDependencies'], mergePkg['dependencies']))) {
     if (key.includes('rax-app')) {
       delete mergePkg['devDependencies'][key];
     }
