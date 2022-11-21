@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import { getNpmInfos } from './npm.js';
 
 const extraDependencies = {
