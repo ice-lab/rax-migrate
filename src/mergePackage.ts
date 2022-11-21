@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { getNpmInfos } from './npm.js';
 
 const extraDependencies = {
   '@ice/plugin-rax-compat': 'latest',
@@ -7,9 +8,8 @@ const extraDependencies = {
 };
 
 Object.keys(extraDependencies).forEach(async name => {
-  const res = await fetch(`https://registry.npmmirror.com/${name}/latest`);
-  const version = (JSON.parse(await res.text()) || {}).version;
-  extraDependencies[name] = version;
+  const res = await getNpmInfos(name);
+  extraDependencies[name] = res.version;
 })
 
 
