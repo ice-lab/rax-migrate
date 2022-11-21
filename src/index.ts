@@ -50,15 +50,16 @@ export async function transform(options: TransfromOptions) {
   const appTsPath = path.join(raxProjectDir, './src/app.ts');
   if (fse.existsSync(appJsPath)) {
     appStr = fse.readFileSync(appJsPath, 'utf-8');
+    // Delete app.js of ice project.
+    spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.js')], { stdio: 'inherit' });
   } else if (fse.existsSync(appTsPath)) {
     appStr = fse.readFileSync(appTsPath, 'utf-8');
+    // Delete app.ts of ice project.
+    spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.ts')], { stdio: 'inherit' });
   }
   let iceAppStr = appStr.replace(/runApp/g, 'defineAppConfig').replace(/rax-app/g, 'ice');
   iceAppStr += 'export default defineAppConfig;';
   fse.writeFileSync(path.join(iceProjectDir, './src/app.tsx'), iceAppStr);
-  // Delete app.js/app/ts of ice project.
-  spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.js')], { stdio: 'inherit' });
-  spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.ts')], { stdio: 'inherit' });
 
 
   // Init document.
