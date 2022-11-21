@@ -21,7 +21,7 @@ export async function transform(options: TransfromOptions) {
   const raxProjectDir = path.resolve(process.cwd(), options.raxProjectName);
 
   // Init ice project.
-  spawn.sync('npx', ['create-ice', options.projcetName, '--template', 'ice-scaffold-simple'], {
+  spawn.sync('npx', ['create-ice', options.projcetName, '--template', '@ice/lite-scaffold'], {
     stdio: 'inherit',
   });
 
@@ -56,8 +56,9 @@ export async function transform(options: TransfromOptions) {
   let iceAppStr = appStr.replace(/runApp/g, 'defineAppConfig').replace(/rax-app/g, 'ice');
   iceAppStr += 'export default defineAppConfig;';
   fse.writeFileSync(path.join(iceProjectDir, './src/app.tsx'), iceAppStr);
-  // Delete app.js of ice project.
+  // Delete app.js/app/ts of ice project.
   spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.js')], { stdio: 'inherit' });
+  spawn.sync('rm', ['-rf', path.join(iceProjectDir, './src/app.ts')], { stdio: 'inherit' });
 
 
   // Init document.
