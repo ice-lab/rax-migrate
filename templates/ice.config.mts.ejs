@@ -8,8 +8,17 @@ import <%-pluginPackageName.slice(pluginPackageName.lastIndexOf('/') + 1, plugin
 <% }); %>
 import weexExternals from './plugins/plugin-weex-external.js';
 
-
 const config: UserConfig = <%-JSON.stringify(iceConfig)%>
+
+// Route config.
+config.routes = {
+  ignoreFiles: ['**/**'],
+  <% if(routeConfig) {-%>
+  defineRoutes: (route) => {
+    <% (routeConfig.defineRoutesConfig || []).forEach(function(config){ %>route('<%- config.route %>', '<%- config.fileName %>');<% }); %>
+  },
+  <% } -%>
+};
 
 // Compat alias, the member of alias is relative path in rax build.json. 
 if (config.alias) {

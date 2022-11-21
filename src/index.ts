@@ -6,7 +6,9 @@ import { fileURLToPath } from 'url';
 import transformBuild from './transformBuild.js';
 import mergePackage from './mergePackage.js';
 import moveFiles from './moveFiles.js';
-import type { RaxAppConfig, Config } from './transformBuild';
+import transformAppJson from './transformApp.js';
+import type { RaxAppConfig } from './transformBuild';
+import type { RaxAppJson } from './transformApp.js';
 
 interface TransfromOptions {
   rootDir: string;
@@ -80,7 +82,14 @@ export async function transform(options: TransfromOptions) {
 
   // Transform build.json to ice.config.mts.
   const buildJson: RaxAppConfig = await fse.readJSON(path.join(raxProjectDir, './build.json'));
-  const config: Config = await transformBuild(buildJson);
+  const {
+    config,
+    iceConfig,
+  } = await transformBuild(buildJson);
+
+  // Transform app.json
+  const appJson: RaxAppJson = await fse.readJSON(path.join(raxProjectDir, './src/app.json'));
+  const { routeConfig } = await transformAppJson(appJson);
 
   const {
     webpackPlugins,
@@ -180,10 +189,11 @@ export async function transform(options: TransfromOptions) {
 
   const iceConfigStr = await ejs.render(fse.readFileSync(path.join(__dirname, '../templates/ice.config.mts.ejs'), 'utf-8'), {
     extraPlugins: config.extraPlugins,
-    iceConfig: config.iceConfig,
+    iceConfig,
     compatRaxConfig: {
       inlineStyle: !!config.inlineStyle,
-    }
+    },
+    routeConfig
   });
   fse.writeFileSync(path.join(iceProjectDir, './ice.config.mts'), iceConfigStr);
 
