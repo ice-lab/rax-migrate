@@ -37,7 +37,7 @@ async function transformAppJson(raxAppJson: RaxAppJson): Promise<{
     if (source.startsWith('pages') && !routesSet.has(path)) {
       routeConfig.defineRoutesConfig.push({
         route: path,
-        fileName: source.slice(source.indexOf('pages') + 'pages'.length, source.length) + '.tsx', // Remove /pages.
+        fileName: source.slice(source.indexOf('pages') + 'pages'.length + 1, source.length) + '.tsx', // Remove /pages/.
       })
     }
 
