@@ -9,7 +9,7 @@ const extraDependencies = {
 Object.keys(extraDependencies).forEach(async name => {
   const res = await getNpmInfos(name);
   extraDependencies[name] = res.version;
-})
+});
 
 
 function mergePackage(raxPkg: object, icePkg: object): object {
