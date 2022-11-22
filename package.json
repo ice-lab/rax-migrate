@@ -1,6 +1,6 @@
 {
   "name": "rax-migrate",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A tool for rax project to migrate into ICE 3 project.",
   "type": "module",
   "bin": {
@@ -9,7 +9,8 @@
   "files": [
     "bin",
     "esm",
-    "templates"
+    "templates",
+    "plugins"
   ],
   "module": "esm/index.js",
   "exports": {
