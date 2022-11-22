@@ -1,19 +1,4 @@
-export interface ICEConfig {
-  alias?: Object,
-  publicPath?: string,
-  devPublicPath?: string,
-  sourceMap?: boolean | string,
-  externals?: Object,
-  hash?: string | boolean,
-  minify?: boolean,
-  outputDir?: string,
-  proxy?: object,
-  define?: object,
-  compileDependencies?: Array<string> | boolean,
-  eslint?: boolean | object,
-  tsChecker?: boolean,
-  plugins: string[],
-}
+import type { ICEConfig } from './iceConfig'
 
 export interface RaxAppConfig {
   webpack5?: boolean,
@@ -48,7 +33,6 @@ export interface RaxAppConfig {
 }
 
 export interface Config {
-  iceConfig: ICEConfig,
   inlineStyle?: boolean | { forceEnableCSS: boolean },
   browsersListRc?: string,
   extraPlugins: Array<String>,
@@ -70,12 +54,13 @@ const PLUGINS = {
   // TODO: @ali/build-plugin-track-info-register
 }
 
-async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
+async function transformBuild(buildJson: RaxAppConfig): Promise<{ config: Config, iceConfig: ICEConfig }> {
   const config: Config = {
-    iceConfig: {
-      plugins: [],
-    },
     extraPlugins: [],
+  };
+
+  const iceConfig: ICEConfig = {
+    plugins: [],
   };
 
   // TODO: support other options of build.json.
@@ -147,11 +132,11 @@ async function transformBuild(buildJson: RaxAppConfig): Promise<Config> {
     'tsChecker'
   ].forEach(key => {
     if (buildJson[key] !== undefined) {
-      config.iceConfig[key] = buildJson[key];
+      iceConfig[key] = buildJson[key];
     }
   })
 
-  return config;
+  return { config, iceConfig };
 }
 
 export default transformBuild;

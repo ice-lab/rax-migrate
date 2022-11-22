@@ -1,8 +1,16 @@
+import { getNpmInfos } from './npm.js';
+
 const extraDependencies = {
   '@ice/plugin-rax-compat': 'latest',
   '@ice/plugin-jsx-plus': 'latest',
   '@ice/webpack-modify': 'latest',
 };
+
+Object.keys(extraDependencies).forEach(async name => {
+  const res = await getNpmInfos(name);
+  extraDependencies[name] = res.version;
+});
+
 
 function mergePackage(raxPkg: object, icePkg: object): object {
   let pkg = Object.assign({}, icePkg);
@@ -24,7 +32,7 @@ function mergePackage(raxPkg: object, icePkg: object): object {
 
   // Add extra dependencies to dependencies.
   for (let [dep, version] of Object.entries(extraDependencies)) {
-    pkg['dependencies'][dep] = version;
+    pkg['devDependencies'][dep] = version;
   }
 
   return pkg;

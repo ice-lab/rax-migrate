@@ -17,6 +17,12 @@
     "outDir": "esm",
     "preserveSymlinks": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "esm", "public"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "esm",
+    "public"
+  ]
 }
