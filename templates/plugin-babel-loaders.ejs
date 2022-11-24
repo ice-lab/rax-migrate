@@ -11,8 +11,8 @@ const plugin = () => ({
           loader: 'babel-loader',
           options: (loaderOptions) => {
             return {
-              presets: [...(loaderOptions.presets || []), ...(<%-JSON.stringify(babelPlugins)%> || [])],
-              plugins: [...(loaderOptions.plugins || []), ...(<%-JSON.stringify(babelPresets)%> || [])],
+              <% if(babelPlugins) {-%>presets: [...(loaderOptions.presets || []), ...(<%-JSON.stringify(babelPlugins)%> || [])],<% } -%>
+              <% if(babelPresets) {-%>plugins: [...(loaderOptions.plugins || []), ...(<%-JSON.stringify(babelPresets)%> || [])],<% } -%>
             }
           }
         });
