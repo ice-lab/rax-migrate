@@ -1,6 +1,6 @@
 {
   "name": "rax-migrate",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A tool for rax project to migrate into ICE 3 project.",
   "type": "module",
   "bin": {
