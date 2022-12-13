@@ -3,7 +3,7 @@ const plugin = () => ({
   setup: ({ onGetConfig }) => {
     onGetConfig((config) => {
       // External weex module.
-      config.configureWebpack ??= [];
+      config.configureWebpack = config.configureWebpack ? config.configureWebpack : [];
       config.configureWebpack.push((webpackConfig) => {
         const { externals } = webpackConfig;
         webpackConfig.externals = [
