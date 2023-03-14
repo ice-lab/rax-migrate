@@ -216,7 +216,7 @@ export async function transform(options: TransfromOptions) {
 
   const devDependencies = mergePkg['devDependencies'] || {};
   config.extraPlugins.forEach((extraPlugin: string) => {
-    if (!devDependencies[extraPlugin]) {
+    if (!devDependencies[extraPlugin] && !extraPlugin.startsWith('.')) {
       devDependencies[extraPlugin] = 'latest';
     }
   })
